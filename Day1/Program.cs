@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Linq;
+using System;
 
 namespace Day1
 {
@@ -6,7 +7,15 @@ namespace Day1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            int[] input = System.IO.File.ReadAllLines("input.txt")
+                .Where(l => !string.IsNullOrWhiteSpace(l))
+                .Select(l => int.Parse(l)).ToArray();
+            A(input);
+        }
+
+        static void A(int[] input)
+        {
+            Console.WriteLine("A: " + input.Sum());
         }
     }
 }
