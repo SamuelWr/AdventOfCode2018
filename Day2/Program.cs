@@ -10,6 +10,7 @@ namespace Day2
         {
             string[] input = System.IO.File.ReadAllLines("input.txt");
             A(input);
+            B(input);
         }
 
         static void A(string[] input)
@@ -28,6 +29,38 @@ namespace Day2
                     count[character]++;
             }
             return count.Values.Any(v => v == times);
+        }
+
+        static void B(string[] input)
+        {
+            foreach (var (a, b) in input.Join(input, _ => 1, _ => 1, (a, b) => (a, b)))
+            {
+                if (DiffersAtExactlyOnePosition(a, b))
+                {
+                    Console.WriteLine("CANDIDATE FOUND:");
+                    Console.WriteLine("\t" + a);
+                    Console.WriteLine("\t" + b);
+                    Console.WriteLine("COMMON CHARACTERS:");
+                    for (int i = 0; i < a.Length; i++)
+                    {
+                        if (a[i] == b[i]) Console.Write(a[i]);
+                    }
+                    Console.WriteLine("");
+                }
+            }
+        }
+
+        static bool DiffersAtExactlyOnePosition(string a, string b)
+        {
+            if (a.Length != b.Length)
+                throw new ArgumentException("not same length");
+            int differences = 0;
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (a[i] != b[i]) differences++;
+                if (differences > 1) return false;
+            }
+            return differences == 1;
         }
     }
 }
