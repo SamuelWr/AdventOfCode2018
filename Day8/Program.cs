@@ -10,6 +10,21 @@ namespace Day8
         static void Main(string[] args)
         {            
             ParseInput(File.ReadAllText("input.txt"));
+            Test();
+        }
+
+        private static void Test()
+        {
+            var testInput = "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2";
+
+            var resA = A(ParseInput(testInput));
+            if (resA == 138) Console.WriteLine("Test A OK");
+            else Console.WriteLine($"Test A FAIL! expected {138} returned {resA}");
+        }
+
+        static int A(Node root)
+        {
+            return -1;
         }
 
         static Node ParseInput(string s)
