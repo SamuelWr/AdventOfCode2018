@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Day5
 {
@@ -38,17 +39,34 @@ namespace Day5
 
         static int A(string input)
         {
-            return -1;
+            return React(input).Length;
         }
 
         static int B(string input)
         {
-            return -1;
+            return alphabet
+                .Select(c => input.Replace("" + c, "").Replace("" + char.ToUpper(c), ""))
+                .Select(polymer => React(polymer))
+                .Select(polymer => polymer.Length)
+                .Min();
         }
 
         static string React(string input)
         {
-            return "";
+            var pairs = alphabet.SelectMany(c => new[] { "" + c + char.ToUpper(c), "" + char.ToUpper(c) + c }).ToArray();
+
+            int oldLength;
+
+            do
+            {
+                oldLength = input.Length;
+                foreach (var pair in pairs)
+                {
+                    input = input.Replace(pair, "");
+                }                
+            } while (oldLength != input.Length);
+
+            return input;
         }
     }
 }
