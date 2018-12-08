@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Day5
@@ -53,20 +54,33 @@ namespace Day5
 
         static string React(string input)
         {
-            var pairs = alphabet.SelectMany(c => new[] { "" + c + char.ToUpper(c), "" + char.ToUpper(c) + c }).ToArray();
+            var polymer = new Stack<char>();
+            polymer.Push(input.First());
 
-            int oldLength;
-
-            do
+            foreach (var unit in input.Skip(1))
             {
-                oldLength = input.Length;
-                foreach (var pair in pairs)
+                if (!polymer.TryPeek(out _))
                 {
-                    input = input.Replace(pair, "");
-                }                
-            } while (oldLength != input.Length);
+                    polymer.Push(unit);
+                    continue;
+                }
+                switch (char.IsLower(unit))
+                {
+                    case true:
+                        if (char.ToUpper(unit) == polymer.Peek())
+                            polymer.Pop();
+                        else polymer.Push(unit);
+                        break;
+                    case false:
+                        if (unit == char.ToUpper(polymer.Peek()))
+                            polymer.Pop();
+                        else polymer.Push(unit);
+                        break;
+                }
+            }
 
-            return input;
+
+            return string.Join("", polymer);
         }
     }
 }
