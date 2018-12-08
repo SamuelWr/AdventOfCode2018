@@ -18,6 +18,10 @@ namespace Day6
             Console.WriteLine("A: ");
             Console.WriteLine("\tResult: " + A(points));
             Console.WriteLine("\tin: " + watch.ElapsedMilliseconds + "ms");
+            watch.Restart();
+            Console.WriteLine("B:");
+            Console.WriteLine("\tResult: " + B(points));
+            Console.WriteLine("\tin: " + watch.ElapsedMilliseconds + "ms");
         }
 
         private static void Test()
@@ -36,7 +40,14 @@ namespace Day6
             var res = A(points);
             if (res == 17) Console.WriteLine("Test OK for A");
             else Console.WriteLine("Test FAILED for A, returned " + res + " should have been 17");
+
+            var res2 = B(points, 32);
+            if (res2 == 16) Console.WriteLine("Test OK for B");
+            else Console.WriteLine("Test FAILED for B, returned " + res2 + " should have been 16");
+
         }
+
+
 
         static int A(Point[] points)
         {
@@ -54,7 +65,7 @@ namespace Day6
 
                 id++;
             }
-            
+
 
             //main loop
             bool didanything;
@@ -118,8 +129,32 @@ namespace Day6
                 candidates.Remove(map[0, column]);
                 candidates.Remove(map[rows - 1, column]);
             }
-            
+
             return candidates.Values.OrderByDescending(n => n.Interior.Count).First().Interior.Count;
+        }
+
+        static int B(Point[] points, int MAX_DISTANCE = 10_000)
+        {
+            var numPoints = points.Length;
+            var minCol = 0 - (MAX_DISTANCE / numPoints);
+            var maxCol = points.Max(p => p.Column) + (MAX_DISTANCE / numPoints);
+            var minRow = 0 - (MAX_DISTANCE / numPoints);
+            var maxRow = points.Max(p => p.Row) + (MAX_DISTANCE / numPoints);
+
+            int sizeOfArea = 0;
+
+            for (int row = minRow; row <= maxRow; row++)
+            {
+                for (int column = minCol; column <= maxCol; column++)
+                {
+                    var point = new Point(row, column);
+                    int distance = points.Sum(p => p.Distance(point));
+                    if (distance < MAX_DISTANCE) sizeOfArea++;
+                }
+            }
+
+
+            return sizeOfArea;
         }
     }
 
@@ -166,6 +201,17 @@ namespace Day6
             yield return new Point(Row + 1, Column);
             yield return new Point(Row, Column - 1);
             yield return new Point(Row, Column + 1);
+        }
+
+        public int Distance(Point other)
+        {
+            int dRow = this.Row - other.Row;
+            dRow = dRow > 0 ? dRow : -dRow;
+
+            int dCol = this.Column - other.Column;
+            dCol = dCol > 0 ? dCol : -dCol;
+
+            return dRow + dCol;
         }
     }
 }
