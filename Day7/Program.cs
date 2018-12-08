@@ -10,6 +10,11 @@ namespace Day7
         {
             var input = ParseInput(System.IO.File.ReadLines("input.txt"));
             Test();
+
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            Console.WriteLine("A:");
+            Console.WriteLine("\tResult: " + A(input));
+            Console.WriteLine("in: " + watch.ElapsedMilliseconds + "ms");
         }
 
         private static (char step, char requires)[] ParseInput(IEnumerable<string> input)
@@ -41,7 +46,27 @@ Step F must be finished before step E can begin.";
 
         private static string A((char step, char requires)[] input)
         {
-            return "";
+            var steps = input.SelectMany(i => new[] { i.step, i.requires }).Distinct().ToArray();
+            var requirements = steps.ToDictionary(step => step, step => new HashSet<char>());
+            foreach (var (step, requires) in input)
+            {
+                requirements[step].Add(requires);
+            }
+
+            var result = new List<char>();
+
+            while (requirements.Any())
+            {
+                var first = requirements.Where(r => !r.Value.Any()).Select(KvP => KvP.Key).OrderBy(k => k).First();
+                result.Add(first);
+                requirements.Remove(first);
+                foreach (var item in requirements.Values)
+                {
+                    item.Remove(first);
+                }
+            }
+
+            return string.Join("", result);
         }
     }
 }
