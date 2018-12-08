@@ -9,8 +9,13 @@ namespace Day8
     {
         static void Main(string[] args)
         {            
-            ParseInput(File.ReadAllText("input.txt"));
+            var nodes = ParseInput(File.ReadAllText("input.txt"));
             Test();
+
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            Console.WriteLine("A:");
+            Console.WriteLine("\tresult: " +A(nodes));
+            Console.WriteLine("\tin: " +watch.ElapsedMilliseconds + "ms");
         }
 
         private static void Test()
@@ -24,7 +29,7 @@ namespace Day8
 
         static int A(Node root)
         {
-            return -1;
+            return root.SumMetaData();
         }
 
         static Node ParseInput(string s)
@@ -45,6 +50,11 @@ namespace Day8
         {
             Children = children;
             Metadata = metadata;
+        }
+
+        public int SumMetaData()
+        {
+            return Metadata.Select(b => Convert.ToInt32(b)).Sum() + Children.Sum(c => c.SumMetaData());
         }
 
         public static Node FromData(Stream data)
