@@ -40,7 +40,7 @@ namespace Day5
 
         static int A(string input)
         {
-            return React(input).Length;
+            return React(input);
         }
 
         static int B(string input)
@@ -48,39 +48,40 @@ namespace Day5
             return alphabet
                 .Select(c => input.Replace("" + c, "").Replace("" + char.ToUpper(c), ""))
                 .Select(polymer => React(polymer))
-                .Select(polymer => polymer.Length)
                 .Min();
         }
 
-        static string React(string input)
+        static int React(string input)
         {
             var polymer = new Stack<char>();
             polymer.Push(input.First());
 
             foreach (var unit in input.Skip(1))
             {
-                if (!polymer.TryPeek(out _))
+                if (polymer.TryPeek(out var prevUnit))
+                {
+                    switch (char.IsLower(unit))
+                    {
+                        case true:
+                            if (char.ToUpper(unit) == prevUnit)
+                                polymer.Pop();
+                            else polymer.Push(unit);
+                            break;
+                        case false:
+                            if (unit == char.ToUpper(prevUnit))
+                                polymer.Pop();
+                            else polymer.Push(unit);
+                            break;
+                    }
+                }
+                else
                 {
                     polymer.Push(unit);
-                    continue;
                 }
-                switch (char.IsLower(unit))
-                {
-                    case true:
-                        if (char.ToUpper(unit) == polymer.Peek())
-                            polymer.Pop();
-                        else polymer.Push(unit);
-                        break;
-                    case false:
-                        if (unit == char.ToUpper(polymer.Peek()))
-                            polymer.Pop();
-                        else polymer.Push(unit);
-                        break;
-                }
+                
             }
 
-
-            return string.Join("", polymer);
+            return polymer.Count;
         }
     }
 }
