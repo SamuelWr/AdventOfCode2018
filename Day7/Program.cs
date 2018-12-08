@@ -15,6 +15,11 @@ namespace Day7
             Console.WriteLine("A:");
             Console.WriteLine("\tResult: " + A(input));
             Console.WriteLine("in: " + watch.ElapsedMilliseconds + "ms");
+
+            watch.Restart();
+            Console.WriteLine("B:");
+            Console.WriteLine("\tResult: " + B(input));
+            Console.WriteLine("in: " + watch.ElapsedMilliseconds + "ms");
         }
 
         private static (char step, char requires)[] ParseInput(IEnumerable<string> input)
@@ -42,7 +47,13 @@ Step F must be finished before step E can begin.";
             string resA = A(input);
             if (resA == "CABDFE") Console.WriteLine("Test A OK");
             else Console.WriteLine("Test A FAIL, returned \"" + resA + "\" expected \"CABDFE\"");
+
+            int resB = B(input, 2, 0);
+            if (resB == 15) Console.WriteLine("Test B OK");
+            else Console.WriteLine("Test B FAIL, returned " + resB + " expected 15");
         }
+
+
 
         private static string A((char step, char requires)[] input)
         {
@@ -67,6 +78,61 @@ Step F must be finished before step E can begin.";
             }
 
             return string.Join("", result);
+        }
+
+        private static int B((char step, char requires)[] input, int workers = 5, int baseTime = 60)
+        {
+            var steps = input.SelectMany(i => new[] { i.step, i.requires }).Distinct().ToArray();
+            var remainingSteps = steps.ToDictionary(step => step, step => new HashSet<char>());
+            foreach (var (step, requires) in input)
+            {
+                remainingSteps[step].Add(requires);
+            }
+
+            int time = 0;
+            var runningTasks = new List<(char step, int finishTime)>();
+
+            while (remainingSteps.Any())
+            {
+                //Handle finished tasks
+                var finishedSteps = runningTasks.Where(t => t.finishTime <= time).Select(t => t.step);
+
+                foreach (var finished in finishedSteps)
+                {
+                    remainingSteps.Remove(finished);
+                    foreach (var requirements in remainingSteps.Values)
+                    {
+                        requirements.Remove(finished);
+                    }
+                }
+                runningTasks.RemoveAll(task => task.finishTime <= time);
+
+                //queue available tasks
+                var availableWorkers = workers - runningTasks.Count;
+                var tasksToStart = remainingSteps
+                    .Where(s => !s.Value.Any())
+                    .Select(KvP => KvP.Key)
+                    .Where(s => !runningTasks.Any(t => t.step == s))
+                    .OrderBy(s => s)
+                    .Take(availableWorkers);
+                foreach (var task in tasksToStart)
+                {
+                    runningTasks.Add((task, time + taskTime(task)));
+                }
+
+                //move time to next finished task (if any)
+                if (runningTasks.Any())
+                {
+                    time = runningTasks.Min(t => t.finishTime);
+                }
+            }
+
+            return time;
+
+            int taskTime(char step)
+            {
+                return baseTime + step - 'A' + 1;
+            }
         }
     }
 }
