@@ -16,6 +16,11 @@ namespace Day8
             Console.WriteLine("A:");
             Console.WriteLine("\tresult: " +A(nodes));
             Console.WriteLine("\tin: " +watch.ElapsedMilliseconds + "ms");
+
+            watch.Restart();
+            Console.WriteLine("B:");
+            Console.WriteLine("\tresult: " + B(nodes));
+            Console.WriteLine("\tin: " + watch.ElapsedMilliseconds + "ms");
         }
 
         private static void Test()
@@ -25,11 +30,19 @@ namespace Day8
             var resA = A(ParseInput(testInput));
             if (resA == 138) Console.WriteLine("Test A OK");
             else Console.WriteLine($"Test A FAIL! expected {138} returned {resA}");
+
+            var resB = B(ParseInput(testInput));
+            if (resB == 66) Console.WriteLine("Test B OK");
+            else Console.WriteLine($"Test B FAIL! expected {66} returned {resB}");
         }
 
         static int A(Node root)
         {
             return root.SumMetaData();
+        }
+        static int B(Node root)
+        {
+            return root.GetValue();
         }
 
         static Node ParseInput(string s)
@@ -55,6 +68,21 @@ namespace Day8
         public int SumMetaData()
         {
             return Metadata.Select(b => Convert.ToInt32(b)).Sum() + Children.Sum(c => c.SumMetaData());
+        }
+
+        public int GetValue()
+        {
+            if (!Children.Any())
+                return Metadata.Select(b => Convert.ToInt32(b)).Sum();
+
+            int sum = 0;
+            foreach (var index in Metadata)
+            {
+                if (index < 1 || index > Children.Count)
+                    continue;
+                sum += Children[index - 1].GetValue();
+            }
+            return sum;
         }
 
         public static Node FromData(Stream data)
