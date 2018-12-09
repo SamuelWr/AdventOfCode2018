@@ -14,11 +14,21 @@ namespace Day9
             Console.WriteLine("A:");
             Console.WriteLine("\tresult: " + A(numPlayers, maxMarble));
             Console.WriteLine("\tin: " + watch.ElapsedMilliseconds + "ms");
+
+            watch.Restart();
+            Console.WriteLine("B:");
+            Console.WriteLine("\tresult: " + B(numPlayers, maxMarble));
+            Console.WriteLine("\tin: " + watch.ElapsedMilliseconds + "ms");
         }
 
-        public static int A(int numPlayers, int maxMarble)
+        public static long B(int numPlayers, int maxMarble)
         {
-            int[] scores = new int[numPlayers];
+            return A(numPlayers, maxMarble * 100);
+        }
+
+        public static long A(int numPlayers, int maxMarble)
+        {
+            long[] scores = new long[numPlayers];
             int currentPlayer = 0;
 
             //first marble

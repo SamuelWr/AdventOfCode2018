@@ -13,9 +13,9 @@ namespace ExampleInputs
         [InlineData(21, 6111, 54718)]
         [InlineData(30, 5807, 37305)]
 
-        public void A(int numPlayers, int maxMarble, int maxScore)
+        public void A(int numPlayers, int maxMarble, long maxScore)
         {
-            int result = Day9.Program.A(numPlayers: numPlayers, maxMarble: maxMarble);
+            long result = Day9.Program.A(numPlayers: numPlayers, maxMarble: maxMarble);
 
             Assert.Equal(maxScore, result);
         }
