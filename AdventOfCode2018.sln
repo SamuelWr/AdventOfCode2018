@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5C0324FC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleInputs", "tests\ExampleInputs\ExampleInputs.csproj", "{D4C5B665-3E12-4DE2-9CE5-1B1758C5934A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Day10", "..\AdventOfCode2018src\Day10\Day10.csproj", "{4C0FC4E4-4303-4812-A10D-E36B121D1B80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day10", "src\Day10\Day10.csproj", "{4C0FC4E4-4303-4812-A10D-E36B121D1B80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
