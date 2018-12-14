@@ -11,22 +11,39 @@ namespace Day13
             var input = System.IO.File.ReadAllLines("input.txt");
             Test();
             (var map, var carts) = parseInput(input);
-            Console.WriteLine(A(map, carts));
+            Console.WriteLine("A: " + A(map, carts));
+            (map, carts) = parseInput(input);
+            Console.WriteLine("B: " + B(map, carts));
         }
 
         static void Test()
         {
-            var testinput =
+            var testinputA =
 @"/->-\        
 |   |  /----\
 | /-+--+-\  |
 | | |  | v  |
 \-+-/  \-+--/
   \------/   ".Split("\r\n");
-            var t = parseInput(testinput);
+            var t = parseInput(testinputA);
             var testA = A(t.map, t.carts);
             if (testA != (7, 3)) Console.WriteLine("Fail A");
             else Console.WriteLine("A Test OK.");
+
+
+            var testinputB =
+@"/>-<\  
+|   |  
+| /<+-\
+| | | v
+\>+</ |
+  |   ^
+  \<->/".Split("\r\n");
+
+            var t2 = parseInput(testinputB);
+            var testB = B(t2.map, t2.carts);
+            if (testB != (6, 4)) Console.WriteLine("Fail B");
+            else Console.WriteLine("B Test OK.");
         }
 
         private static (int X, int Y) A(char[,] map, Cart[] carts)
@@ -42,6 +59,27 @@ namespace Day13
                         return (cart.Column, cart.Row);
                 }
             }
+        }
+
+        private static (int X, int Y) B(char[,] map, Cart[] carts)
+        {
+            var livingCarts = carts.ToDictionary(c => c.Id);
+            while (livingCarts.Count > 1)
+            {
+                var orderedCarts = livingCarts.Values.OrderBy(c => c.Row).ThenBy(c => c.Column).ToArray();
+                foreach (var cart in orderedCarts)
+                {
+                    cart.Move();
+                    cart.Turn(map[cart.Row, cart.Column]);
+                    if (livingCarts.Values.SingleOrDefault(c => c.Id != cart.Id && c.Row == cart.Row && c.Column == cart.Column) is Cart collisionCart)
+                    {
+                        livingCarts.Remove(cart.Id);
+                        livingCarts.Remove(collisionCart.Id);
+                    }
+                }
+            }
+
+            return livingCarts.Values.Select(c => (c.Column, c.Row)).Single();
         }
 
         static (char[,] map, Cart[] carts) parseInput(string[] input)
