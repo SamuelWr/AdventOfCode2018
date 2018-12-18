@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Day18
@@ -12,6 +13,11 @@ namespace Day18
             var watch = System.Diagnostics.Stopwatch.StartNew();
             Console.WriteLine("A:");
             Console.WriteLine("\tresult: " + A(input));
+            Console.WriteLine("\tin: " + watch.ElapsedMilliseconds + "ms");
+
+            watch.Restart();
+            Console.WriteLine("B:");
+            Console.WriteLine("\tresult: " + B(input));
             Console.WriteLine("\tin: " + watch.ElapsedMilliseconds + "ms");
         }
 
@@ -41,6 +47,35 @@ namespace Day18
             {
                 area.Step();
                 if (debug) Console.WriteLine(area.ToString());
+            }
+            return area.Value();
+        }
+
+        static int B(string[] input)
+        {
+            const int MAX_GENERATION = 1_000_000_000;
+            Dictionary<int, int> seenValues = new Dictionary<int, int>();
+
+
+            var area = CollectionArea.FromInput(input);
+            while (area.Generation < MAX_GENERATION)
+            {
+                area.Step();
+                if (area.Generation > 1000)
+                {
+                    if (seenValues.ContainsKey(area.Value()))
+                    {
+                        var gen = area.Generation;
+                        var prevGen = seenValues[area.Value()];
+                        var gendiff = gen - prevGen;
+                        var skipSteps = (MAX_GENERATION - area.Generation) / gendiff;
+                        area.SkipForward(skipSteps * gendiff);
+                    }
+                    else
+                    {
+                        seenValues[area.Value()] = area.Generation;
+                    }
+                }
             }
             return area.Value();
         }
@@ -104,7 +139,7 @@ namespace Day18
                             if (acres[row + 1, col + 0] == acre.wood) neighWood++;
                             if (acres[row + 1, col + 1] == acre.wood) neighWood++;
 
-                            if (neighWood >= 3) nextState = acre.wood;
+                            if (neighWood >= 3) { nextState = acre.wood; }
                             else nextState = acre.open;
                             break;
                         case acre.wood:
@@ -117,7 +152,7 @@ namespace Day18
                             if (acres[row + 1, col + 0] == acre.lumberyard) neighLumber++;
                             if (acres[row + 1, col + 1] == acre.lumberyard) neighLumber++;
 
-                            if (neighLumber >= 3) nextState = acre.lumberyard;
+                            if (neighLumber >= 3) { nextState = acre.lumberyard; }
                             else nextState = acre.wood;
                             break;
                         case acre.lumberyard:
@@ -140,7 +175,7 @@ namespace Day18
                             if (acres[row + 1, col + 1] == acre.lumberyard) neighLumber++;
 
                             if (neighLumber > 0 && neighWood > 0) nextState = acre.lumberyard;
-                            else nextState = acre.open;
+                            else { nextState = acre.open; }
                             break;
                         default: throw new Exception("unreachable"); //to satisfy compliler that nextState has been set.
                     }
@@ -206,6 +241,11 @@ namespace Day18
                 }
             }
             return sb.ToString();
+        }
+
+        internal void SkipForward(int skip)
+        {
+            Generation += skip;
         }
 
         public enum acre
